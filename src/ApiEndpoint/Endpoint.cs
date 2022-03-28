@@ -137,7 +137,12 @@ namespace TwitterSharp.ApiEndpoint
         [Endpoint(Resource = Resource.Users, EndpointType = EndpointType.DELETE, Url = "/2/users/:source_user_id/muting/:target_user_id", Group = "Manage mutes", LimitPerUser = 50)]
         [Description("Allows a user ID to unmute another user")]
         UnmuteUser,
-
+        [Endpoint(Resource =Resource.Users, EndpointType = EndpointType.POST, Url ="/2/users/:id/likes", Group = "Likes", LimitPerUser = 50)]
+        [Description("Allows user to check if tweet is liked")]
+        IsLiked,
+        [Endpoint(Resource = Resource.Users, EndpointType = EndpointType.DELETE, Url = "/2/users/:id/likes/:tweet_id", Group = "Likes", LimitPerUser = 50)]
+        [Description("Allows user to remove(unlike) like from tweet")]
+        RemoveLike, 
         #endregion
 
         #region Spaces
