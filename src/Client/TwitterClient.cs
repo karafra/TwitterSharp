@@ -19,7 +19,7 @@ using TwitterSharp.Response;
 using TwitterSharp.Response.RStream;
 using TwitterSharp.Response.RTweet;
 using TwitterSharp.Response.RUser;
-
+using TwitterSharp.Response.RLike;
 namespace TwitterSharp.Client
 {
     /// <summary>
@@ -433,7 +433,47 @@ namespace TwitterSharp.Client
             };
         }
         #endregion Follows
+        
+        #region Likes
 
+        public async Task<bool> IsLiked(string userId, string tweetId, CancellationToken cancellationToken = default)
+        {
+            var url = _baseUrl + $"https://api.twitter.com/2/users/{userId}/likes";
+            var content = new StringContent(
+                JsonSerializer.Serialize(
+                    new LikeRequestPost { 
+                        TweetId = tweetId
+                    }, _jsonOptions),
+                Encoding.UTF8,
+                "application/json"
+            );
+            var res = await _httpClient.PostAsync(url, content, cancellationToken);
+            BuildRateLimit(res.Headers, Endpoint.IsLiked);
+            return ParseData<Like>(
+                await res.Content.ReadAsStringAsync()
+            ).Data.Liked;
+        }
+
+        public async Task<bool> RemoveLike(string userId, string tweetId, CancellationToken cancellationToken)
+        {
+            var url = _baseUrl + $"https://api.twitter.com/2/users/{userId}/likes{tweetId}";
+            var content = new StringContent(
+                JsonSerializer.Serialize(
+                    new LikeRequestPost { 
+                        TweetId = tweetId
+                    }, _jsonOptions),
+                Encoding.UTF8,
+                "application/json"
+            );
+            var res = await _httpClient.DeleteAsync(url, cancellationToken);
+            BuildRateLimit(res.Headers, Endpoint.IsLiked);
+            return ParseData<Like>(
+                await res.Content.ReadAsStringAsync()
+            ).Data.Liked;
+        }
+
+
+        #endregion
         private const string _baseUrl = "https://api.twitter.com/2/";
 
         private readonly HttpClient _httpClient;
